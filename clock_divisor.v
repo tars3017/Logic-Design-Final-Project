@@ -87,7 +87,7 @@ end
 reg [14:0] count_25K, count_25K_next;
 reg clk_2k_next;
 always @*
-  if (count_25K == 15'd25000)
+  if (count_25K == 15'd15000)
   begin
     count_25K_next = 15'd0;
     clk_2k_next = ~clk_2k;

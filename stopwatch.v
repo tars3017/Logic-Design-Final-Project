@@ -58,7 +58,7 @@ count_time Usec1(
   .count_enable(carry_small_sec0), // counting enabled control signal
   .load_value_enable(1'b0), // load setting value control
   .load_value(4'd0), // value to be loaded
-  .count_limit(4'd5), // limit of the up counter
+  .count_limit(4'd9), // limit of the up counter
   .clk(clk), // clock
   .rst(rst), // high active reset
   .to_limit(1'b0 ),
