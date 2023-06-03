@@ -9,7 +9,18 @@ module top(
     input btn_mid,
     input btn_up,
     output [3:0] ssd_ctl,
-    output [7:0] segs
+    output [7:0] segs,
+    
+    // for Keyboard Decoder
+    inout  PS2_DATA,
+    inout  PS2_CLK,
+    
+    // for maps
+    output [4:0]row,    //up and down
+    output [4:0]column,  //left and right
+    output [3:0]locate,
+    
+    input sel_seven_display
     
 );
 
@@ -37,8 +48,22 @@ reg display_next_state;
 reg btn_up_delay;
 wire btn_up_fnl;
 
-assign row_pos = 5'd2;
-assign col_pos = 5'd10;
+// for Keyboard Decoder
+wire key_valid;
+wire [8:0] last_change;
+wire [511:0] key_down;
+
+// maps
+wire move;
+
+
+wire [3:0]row1;
+wire [3:0]row2;
+wire [3:0]col1;
+wire [3:0]col2;
+
+assign row_pos = row;
+assign col_pos = column;
 assign in_range =(h_cnt >= (col_pos * 20) + 2 && h_cnt < (col_pos + 1) * 20  - 1 && v_cnt >= (row_pos * 20) + 1 && v_cnt < (row_pos + 1)* 20 - 1); 
 always@* begin
     if (!valid)  {vgaRed, vgaGreen, vgaBlue} = 12'h0;
@@ -104,7 +129,11 @@ stopwatch(
     .clk(clk_100),
     .rst(rst),
     .btn_origin(btn_mid),
-    .clk_10Hz(clk_10Hz)
+    .clk_10Hz(clk_10Hz),
+    .row(row),
+    .column(column),
+    .last_change(last_change),
+    .key_valid(key_valid)
 );
 
 // seven segment display
@@ -119,13 +148,20 @@ scan_ctl(
     .rst(rst)
 );
 
+
 display(
     .bin(ssd_in),
     .segs(segs)
 );
 
 always @* begin
-    if (display_next_state) begin
+    if (sel_seven_display) begin
+        in0 = row1;
+        in1 = row2;
+        in2 = col1;
+        in3 = col2;
+    end
+    else if (display_next_state) begin
         in0 = small_sec0;
         in1 = small_sec1;
         in2 = 4'd10;
@@ -161,4 +197,11 @@ always@* begin
     end
 end
 
+KeyboardDecoder U0(.key_down(key_down),.last_change(last_change),.key_valid(key_valid),.PS2_DATA(PS2_DATA),.PS2_CLK(PS2_CLK),.rst(rst),.clk(clk));
+maps U1(.locate(locate),.clk(clk),.rst(rst),.key_down(key_down),.last_change(last_change),.key_valid(key_valid),.row(row),.column(column), .move(move));
+
+assign col2 = column/10;
+assign col1 = column%10;
+assign row2 = row/10;
+assign row1 = row%10;
 endmodule
