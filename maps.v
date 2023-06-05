@@ -72,7 +72,7 @@ module maps(
     assign location[30][0] = 4'b1010;
     assign location[31][0] = 4'b1100;
     
-    assign location[0][1] = 4'b0100;   //up right down left
+    assign location[0][1] = 4'b0101;   //up right down left
     assign location[1][1] = 4'b1101;
     assign location[2][1] = 4'b1001;
     assign location[3][1] = 4'b0110;

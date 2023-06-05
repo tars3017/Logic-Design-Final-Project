@@ -10,11 +10,7 @@ module stopwatch(
   input rst,
   input btn_origin,
   input clk_10Hz,
-  input [4:0] row,
-  input [4:0] column,
-  input key_valid,
-  input [8:0] last_change,
-  output reg game_state
+  input cnt_enable
 );
 
 wire carry_small_sec0, carry_small_sec1, carry_sec0, carry_sec1, carry_min0;
@@ -32,11 +28,9 @@ assign btn = (~btn_delay) & btn_origin;
 always@(posedge clk_10Hz or posedge rst) begin
     if (rst) begin
         start_state <= 1'b0; // use btn_mid to control
-        game_state <= 1'b0; // when user start to move will trigger it
     end
     else begin
         start_state <= next_state;
-        game_state <= game_next_state;
     end
 end
 
@@ -49,22 +43,11 @@ always @* begin
     end
 end
 
-always @* begin
-    if (((last_change == 9'h1D)||(last_change == 9'h1C)||(last_change == 9'h1B)||(last_change == 9'h23)) && game_state == 1'b0) begin
-        game_next_state = 1'b1;
-    end
-    else if (((last_change == 9'h1D)||(last_change == 9'h1C)||(last_change == 9'h1B)||(last_change == 9'h23)) &&column == 5'd31 && row == 5'd23) begin
-        game_next_state = 1'b0;
-    end
-    else begin
-        game_next_state = game_state;
-    end
-end
 //small second0 counter
 count_time Usec0(
   .q(small_sec0), // counter value
   .time_carry(carry_small_sec0), // counter carry
-  .count_enable(game_state), // counting enabled control signal
+  .count_enable(cnt_enable), // counting enabled control signal
   .load_value_enable(1'b0), // load setting value control
   .load_value(4'd0), // value to be loaded
   .count_limit(4'd9), // limit of the up counter
@@ -127,7 +110,7 @@ count_time Uhr0(
   .clk(clk), // clock
   .rst(rst), // high active reset
   .to_limit(1'b0),
-  .start_value(4'd0)
+  .start_value(4'd5)
 );
 
 //hour1 counter

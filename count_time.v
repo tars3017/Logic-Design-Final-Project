@@ -33,11 +33,11 @@ begin
     begin
       q_next =start_value;
     end
-   else if (q == count_limit && count_enable) begin
-    q_next = 4'd0;
+   else if (q == 4'd0 && count_enable) begin
+    q_next = count_limit;
     time_carry = 1'b1;
    end
   else if (count_enable)
-    q_next = q + 1'b1;
+    q_next = q - 1'b1;
 end
 endmodule

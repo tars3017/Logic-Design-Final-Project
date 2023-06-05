@@ -1,4 +1,4 @@
-module clock_divisor(clk1, clk, clk22, clk_10Hz, clk_1Hz, clk_2k, clk_100);
+module clock_divisor(clk1, clk, clk22, clk_10Hz, clk_1Hz, clk_2k, clk_100, count_5M);
 input clk;
 output clk1;
 output clk22;
@@ -6,11 +6,12 @@ output reg clk_1Hz;
 output reg clk_10Hz;
 output reg clk_2k;
 output reg clk_100;
+output reg [26:0] count_5M;
 reg [21:0] num;
 wire [21:0] next_num;
 
 reg clk_10Hz_next;
-reg [26:0] count_5M, count_5M_next;
+reg [26:0] count_5M_next;
 
 always @(posedge clk) begin
   num <= next_num;
