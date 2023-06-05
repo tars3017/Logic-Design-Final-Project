@@ -356,7 +356,7 @@ module maps(
     assign location[5'd17][5'd9] = 4'b1100;
     assign location[5'd18][5'd9] = 4'b0011;
     assign location[5'd19][5'd9] = 4'b1010;
-    assign location[5'd20][5'd9] = 4'b0011;   
+    assign location[5'd20][5'd9] = 4'b0010;   
     assign location[5'd21][5'd9] = 4'b0110;
     assign location[5'd22][5'd9] = 4'b0011;
     assign location[5'd23][5'd9] = 4'b0010;

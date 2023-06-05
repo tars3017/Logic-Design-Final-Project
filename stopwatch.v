@@ -13,13 +13,14 @@ module stopwatch(
   input [4:0] row,
   input [4:0] column,
   input key_valid,
-  input [8:0] last_change
+  input [8:0] last_change,
+  output reg game_state
 );
 
 wire carry_small_sec0, carry_small_sec1, carry_sec0, carry_sec1, carry_min0;
 wire btn;
 reg btn_delay, start_state, next_state;
-reg  game_state, game_next_state;
+reg   game_next_state;
 
 
 // FSM
@@ -52,7 +53,7 @@ always @* begin
     if (((last_change == 9'h1D)||(last_change == 9'h1C)||(last_change == 9'h1B)||(last_change == 9'h23)) && game_state == 1'b0) begin
         game_next_state = 1'b1;
     end
-    else if ( ((last_change == 9'h1D)||(last_change == 9'h1C)||(last_change == 9'h1B)||(last_change == 9'h23)) && row == 5'd31 && column == 5'd23) begin
+    else if (((last_change == 9'h1D)||(last_change == 9'h1C)||(last_change == 9'h1B)||(last_change == 9'h23)) &&column == 5'd31 && row == 5'd23) begin
         game_next_state = 1'b0;
     end
     else begin

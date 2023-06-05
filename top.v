@@ -20,20 +20,21 @@ module top(
     output [4:0]column,  //left and right
     output [3:0]locate,
     
-    input sel_seven_display
-    
+    input sel_seven_display,
+    output game_state
 );
 
 wire clk_25MHz, clk_10Hz, clk_1Hz, clk_22, clk_2k, clk_100; // clock_divisor
 wire [9:0] v_cnt, h_cnt; // mem_addr_gen
 //wire [16:0] pixel_addr; // mem_addr_gen
 wire valid; // vga_controller
-wire [11:0] pixel_maze, pixel_guy; // blk_mem_gen_maze
+wire [11:0] pixel_maze, pixel_guy, pixel_trophy; // blk_mem_gen_maze
 // maze: 320*240 (maze cell 32*24)
 // guy: 26*26
 // one cell in maze 20*20
 wire [4:0] row_pos, col_pos; // for the character's position
 wire in_range;
+wire trophy_in_range;
 
 // for stopwatch
 wire [3:0] small_sec0, small_sec1, sec0, sec1, min0, min1;
@@ -65,9 +66,11 @@ wire [3:0]col2;
 assign row_pos = row;
 assign col_pos = column;
 assign in_range =(h_cnt >= (col_pos * 20) + 2 && h_cnt < (col_pos + 1) * 20  - 1 && v_cnt >= (row_pos * 20) + 1 && v_cnt < (row_pos + 1)* 20 - 1); 
+assign trophy_in_range = (h_cnt >= (31 * 20) + 2 && h_cnt < (31 + 1) * 20  - 1 && v_cnt >= (23 * 20) + 1 && v_cnt < (23 + 1)* 20 - 1);
 always@* begin
     if (!valid)  {vgaRed, vgaGreen, vgaBlue} = 12'h0;
-    else if (valid && in_range && pixel_guy != 12'hfff) {vgaRed, vgaGreen, vgaBlue} = 12'hf00;
+    else if (in_range && pixel_guy != 12'hfff) {vgaRed, vgaGreen, vgaBlue} = 12'hf00;
+    else if (trophy_in_range && (column != 5'd31 || row != 5'd23) && pixel_trophy != 12'hfff) {vgaRed, vgaGreen, vgaBlue} = 12'h771;
     else if (pixel_maze == 1'b1) {vgaRed, vgaGreen, vgaBlue} = 12'hfff;
     else {vgaRed, vgaGreen, vgaBlue} = 12'h000;
     // else {vgaRed, vgaGreen, vgaBlue} = pixel_maze;
@@ -118,6 +121,14 @@ blk_mem_gen_guy blk_mem_gen_guy(
     .douta(pixel_guy)
 );
 
+blk_mem_gen_trophy blk_mem_gen_trophy(
+    .clka(clk_25MHz),
+    .wea(0),
+    .addra( (h_cnt - 31 * 20 + 1) + (v_cnt - 23 * 20 - 1) * 18),
+    .dina(),
+    .douta(pixel_trophy)
+);
+
 // stopwatch to calculate time
 stopwatch(
     .small_sec0(small_sec0),
@@ -133,7 +144,8 @@ stopwatch(
     .row(row),
     .column(column),
     .last_change(last_change),
-    .key_valid(key_valid)
+    .key_valid(key_valid),
+    .game_state(game_state)
 );
 
 // seven segment display
