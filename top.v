@@ -30,12 +30,14 @@ wire [9:0] v_cnt, h_cnt; // mem_addr_gen
 //wire [16:0] pixel_addr; // mem_addr_gen
 wire valid; // vga_controller
 wire [11:0] pixel_maze, pixel_guy, pixel_trophy0, pixel_trophy1, pixel_trophy2; // blk_mem_gen_maze
+wire [11:0] pixel_win, pixel_lose;
 // maze: 320*240 (maze cell 32*24)
 // guy: 26*26
 // one cell in maze 20*20
 wire [4:0] row_pos, col_pos; // for the character's position
 wire in_range;
 wire trophy0_in_range, trophy1_in_range, trophy2_in_range;
+wire lose_in_range, win_in_range;
 
 // for stopwatch
 wire [3:0] small_sec0, small_sec1, sec0, sec1, min0, min1;
@@ -88,6 +90,8 @@ assign in_range =(h_cnt >= (col_pos * 20) + 2 && h_cnt < (col_pos + 1) * 20  - 1
 assign trophy0_in_range = (h_cnt >= (trophy0_c * 20) + 2 && h_cnt < (trophy0_c + 1) * 20  - 1 && v_cnt >= (trophy0_r * 20) + 1 && v_cnt < (trophy0_r + 1)* 20 - 1);
 assign trophy1_in_range = (h_cnt >= (trophy1_c * 20) + 2 && h_cnt < (trophy1_c + 1) * 20  - 1 && v_cnt >= (trophy1_r * 20) + 1 && v_cnt < (trophy1_r + 1)* 20 - 1);
 assign trophy2_in_range = (h_cnt >= (trophy2_c * 20) + 2 && h_cnt < (trophy2_c + 1) * 20  - 1 && v_cnt >= (trophy2_r * 20) + 1 && v_cnt < (trophy2_r + 1)* 20 - 1);
+assign win_in_range = (h_cnt >= 73 && h_cnt <= 568) && (v_cnt >= 89 && v_cnt <= 389);
+assign lose_in_range = (h_cnt >= 43 && h_cnt <= 598) && (v_cnt >= 133 && v_cnt <= 345);
 
 always@* begin
     case(show_control) 
@@ -104,12 +108,16 @@ always@* begin
         3'b010: begin
             // ouput win scene here
             if (!valid) {vgaRed, vgaGreen, vgaBlue} = 12'h0;
-            else {vgaRed, vgaGreen, vgaBlue} = 12'h0f0;
+            else if (win_in_range && pixel_win != 12'h000) {vgaRed, vgaGreen, vgaBlue} = 12'hfff;
+            else if (win_in_range && pixel_win == 12'h000) {vgaRed, vgaGreen, vgaBlue} = 12'h000;
+            else {vgaRed, vgaGreen, vgaBlue} = 12'hfff;
         end
         3'b001: begin
             // output lose scene here
             if (!valid) {vgaRed, vgaGreen, vgaBlue} = 12'h0;
-            else {vgaRed, vgaGreen, vgaBlue} = 12'h00f;
+            else if (lose_in_range && pixel_lose != 12'h000) {vgaRed, vgaGreen, vgaBlue} = 12'hfff;
+            else if (lose_in_range && pixel_lose == 12'h000) {vgaRed, vgaGreen, vgaBlue} = 12'h000;
+            else {vgaRed, vgaGreen, vgaBlue} = 12'hfff;
         end
         default: begin      
             if (!valid)  {vgaRed, vgaGreen, vgaBlue} = 12'h0;
@@ -191,6 +199,22 @@ blk_mem_gen_trophy blk_mem_gen_trophy2(
     .addra( (h_cnt - trophy2_c * 20 + 1) + (v_cnt - trophy2_r * 20 - 1) * 18),
     .dina(),
     .douta(pixel_trophy2)
+);
+
+blk_mem_gen_win blk_mem_gen_win(
+    .clka(clk_25MHz),
+    .wea(0),
+    .addra( (h_cnt - 73) + (v_cnt - 89) * 495),
+    .dina(),
+    .douta(pixel_win)
+);
+
+blk_mem_gen_lose blk_mem_gen_lose(
+    .clka(clk_25MHz),
+    .wea(0),
+    .addra( (h_cnt - 43) + (v_cnt - 133) * 555),
+    .dina(),
+    .douta(pixel_lose)
 );
 
 // stopwatch to calculate time

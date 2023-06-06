@@ -110,7 +110,7 @@ count_time Uhr0(
   .clk(clk), // clock
   .rst(rst), // high active reset
   .to_limit(1'b0),
-  .start_value(4'd5)
+  .start_value(4'd2)
 );
 
 //hour1 counter
