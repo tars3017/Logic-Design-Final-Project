@@ -21,7 +21,13 @@ module top(
     output [3:0]locate,
     
     input sel_seven_display,
-    input sel_random_display
+    input sel_random_display,
+    
+    // for top_sound
+   output audio_mclk,
+   output audio_lrck,
+   output audio_sck,
+   output audio_sdin
 );
 
 wire clk_25MHz, clk_10Hz, clk_1Hz, clk_22, clk_2k, clk_100; // clock_divisor
@@ -333,5 +339,15 @@ trophy_control (
     .trophy2_c(trophy2_c),
     .count_5M(count_5M),
     .game_start(game_start)
+);
+
+top_sound (
+    .state(game_state[1:0]),
+    .clk(clk),
+    .rst_n(~rst),
+    .audio_mclk(audio_mclk),
+    .audio_lrck(audio_lrck),
+    .audio_sck(audio_sck),
+    .audio_sdin(audio_sdin)
 );
 endmodule
