@@ -20,5 +20,5 @@ always@(posedge clk or posedge rst) begin
     end
 end
 
-assign random_out = (lfsr % (range)) + 6; 
+assign random_out = (lfsr % (range)) + 9; 
 endmodule

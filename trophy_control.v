@@ -14,14 +14,14 @@ reg [2:0] trophy_cnt_next;
 reg [4:0] trophy0_r_next, trophy0_c_next, trophy1_r_next, trophy1_c_next, trophy2_r_next, trophy2_c_next;
 wire [4:0] rand0_r, rand0_c, rand1_r, rand1_c, rand2_r, rand2_c;
 
-lfsr random0_r(.clk(clk), .rst(rst), .random_out(rand0_r), .range(5'd18), .gen(1'b1), .seed(count_5M[4:0] | 5'b10001));
-lfsr random0_c(.clk(clk), .rst(rst), .random_out(rand0_c), .range(5'd26), .gen(1'b1), .seed(count_5M[7:3] | 5'b00010));
+lfsr random0_r(.clk(clk), .rst(rst), .random_out(rand0_r), .range(5'd15), .gen(1'b1), .seed(count_5M[4:0] | 5'b10001));
+lfsr random0_c(.clk(clk), .rst(rst), .random_out(rand0_c), .range(5'd23), .gen(1'b1), .seed(count_5M[7:3] | 5'b00010));
 
-lfsr random1_r(.clk(clk), .rst(rst), .random_out(rand1_r), .range(5'd18), .gen(1'b1), .seed(count_5M[16:12] | 5'b01100));
-lfsr random1_c(.clk(clk), .rst(rst), .random_out(rand1_c), .range(5'd26), .gen(1'b1), .seed(count_5M[10:6] | 5'b01100));
+lfsr random1_r(.clk(clk), .rst(rst), .random_out(rand1_r), .range(5'd15), .gen(1'b1), .seed(count_5M[16:12] | 5'b01100));
+lfsr random1_c(.clk(clk), .rst(rst), .random_out(rand1_c), .range(5'd23), .gen(1'b1), .seed(count_5M[10:6] | 5'b01100));
 
-lfsr random2_r(.clk(clk), .rst(rst), .random_out(rand2_r), .range(5'd18), .gen(1'b1), .seed(count_5M[12:8] | 5'b01000));
-lfsr random2_c(.clk(clk), .rst(rst), .random_out(rand2_c), .range(5'd26), .gen(1'b1), .seed(count_5M[25:21] | 5'b10010));
+lfsr random2_r(.clk(clk), .rst(rst), .random_out(rand2_r), .range(5'd15), .gen(1'b1), .seed(count_5M[12:8] | 5'b01000));
+lfsr random2_c(.clk(clk), .rst(rst), .random_out(rand2_c), .range(5'd23), .gen(1'b1), .seed(count_5M[14:10] | 5'b10010));
 
 
 
